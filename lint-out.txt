@@ -1,0 +1,161 @@
+﻿
+> default-project@0.0.0 lint
+> oxlint
+
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+   ,-[src/utils/files.js:4:12]
+ 3 |     const reader = new FileReader()
+ 4 |     reader.onload = () => resolve(reader.result)
+   :            ^^^^^^
+ 5 |     reader.onerror = () => reject(new Error('Could not read that file.'))
+   `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+   ,-[src/utils/files.js:5:12]
+ 4 |     reader.onload = () => resolve(reader.result)
+ 5 |     reader.onerror = () => reject(new Error('Could not read that file.'))
+   :            ^^^^^^^
+ 6 |     reader.readAsDataURL(file)
+   `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+    ,-[src/utils/files.js:13:12]
+ 12 |     const reader = new FileReader()
+ 13 |     reader.onload = () => resolve(reader.result)
+    :            ^^^^^^
+ 14 |     reader.onerror = () => reject(new Error('Could not read that file.'))
+    `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+    ,-[src/utils/files.js:14:12]
+ 13 |     reader.onload = () => resolve(reader.result)
+ 14 |     reader.onerror = () => reject(new Error('Could not read that file.'))
+    :            ^^^^^^^
+ 15 |     reader.readAsText(file)
+    `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! oxc(no-map-spread): Spreading to modify array elements in `map` calls is inefficient
+     ,-[src/pages/Lessons.jsx:167:27]
+ 166 |                   ['Quarter', 'Type', 'Title', 'Topic', 'SDGs', 'Status'],
+ 167 |                   ...QUARTERS.flatMap((quarter) => [
+     :                               ^^^|^^^
+     :                                  `-- This map call spreads an array
+ 168 | ,->                 ...plates
+ 169 | |                     .filter((p) => p.quarter === quarter.id)
+ 170 | |->                   .map((p) => [quarter.label, 'Plate', p.title, p.topic, p.sdgs.join(', '), 'Available']),
+     : `---- These spreads allocate new values on each iteration
+ 171 | ,->                 ...pdfs
+ 172 | |                     .filter((p) => p.quarter === quarter.id && p.published)
+ 173 | `->                   .map((p) => [quarter.label, 'PDF', p.title, p.topic, p.sdgs.join(', '), progressFor(p.id)?.status ?? 'not started']),
+ 174 | ,->                 ...videos
+ 175 | |                     .filter((v) => v.quarter === quarter.id)
+ 176 | `->                   .map((v) => [quarter.label, 'Video', v.title, v.topic, v.sdgs.join(', '), 'Available']),
+ 177 |                   ]),
+     `----
+  help: If in-place mutation is acceptable, use `push` (or `concat` when semantics match) instead of spreading
+  note: `push` mutates the array. `concat` returns a new array and is not equivalent for every iterable.
+
+  ! oxc(no-map-spread): Spreading to modify object properties in `map` calls is inefficient
+    ,-[src/pages/Dashboard.jsx:50:23]
+ 49 |     const inProgress = myProgress.filter((p) => p.status === 'opened').slice(0, 3)
+ 50 |     return inProgress.map((p) => ({ kind: 'pdf', ...p, item: pdfs.find((pdf) => pdf.id === p.refId) }))
+    :                       ^|^                        ^^|^
+    :                        |                           `-- This spread allocates a new value on each iteration
+    :                        `-- This map call spreads an object
+ 51 |   }, [myProgress, pdfs])
+    `----
+  help: If in-place mutation is acceptable, use `Object.assign` or direct property assignment instead of spreading
+  note: `Object.assign` mutates the first argument. Disable this rule if copy-on-write behavior is required.
+
+  ! oxc(no-map-spread): Spreading to modify array elements in `map` calls is inefficient
+    ,-[src/pages/ResearchData.jsx:18:10]
+ 17 |         .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt))
+ 18 |         .map((s) => {
+    :          ^|^
+    :           `-- This map call spreads an array
+ 19 |           const values = SURVEY_ITEMS.map((i) => s.answers[i.id]).filter((v) => typeof v === 'number')
+ 20 |           const domainMeans = SURVEY_DOMAINS.map((domain) => {
+ 21 |             const domainValues = SURVEY_ITEMS.filter((i) => i.domain === domain)
+ 22 |               .map((i) => s.answers[i.id])
+ 23 |               .filter((v) => typeof v === 'number')
+ 24 |             return domainValues.length ? mean(domainValues).toFixed(2) : ''
+ 25 |           })
+ 26 |           return [
+ 27 |             students.find((st) => st.id === s.userId)?.name ?? s.userId,
+ 28 |             s.section,
+ 29 |             s.submittedAt.slice(0, 10),
+ 30 |             ...SURVEY_ITEMS.map((i) => s.answers[i.id] ?? ''),
+    :             ^^^^^^^^^^^^^^^^^^^^^^^^|^^^^^^^^^^^^^^^^^^^^^^^^
+    :                                     `-- This spread allocates a new value on each iteration
+ 31 |             values.length ? mean(values).toFixed(2) : '',
+    `----
+  help: If in-place mutation is acceptable, use `push` (or `concat` when semantics match) instead of spreading
+  note: `push` mutates the array. `concat` returns a new array and is not equivalent for every iterable.
+
+  ! oxc(no-map-spread): Spreading to modify array elements in `map` calls is inefficient
+    ,-[src/pages/ResearchData.jsx:45:10]
+ 44 |         .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt))
+ 45 |         .map((c) => {
+    :          ^|^
+    :           `-- This map call spreads an array
+ 46 |           const achieved = Object.values(c.responses ?? {}).filter((v) => v === 1).length
+ 47 |           return [
+ 48 |             students.find((st) => st.id === c.userId)?.name ?? c.userId,
+ 49 |             c.section,
+ 50 |             c.selfAssessed ? 'yes' : 'no',
+ 51 |             achieved,
+ 52 |             CHECKLIST_INDICATORS.length,
+ 53 |             ...CHECKLIST_INDICATORS.map((i) => c.responses?.[i.id] ?? ''),
+    :             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    :                                           `-- This spread allocates a new value on each iteration
+ 54 |           ]
+    `----
+  help: If in-place mutation is acceptable, use `push` (or `concat` when semantics match) instead of spreading
+  note: `push` mutates the array. `concat` returns a new array and is not equivalent for every iterable.
+
+  ! oxc(no-map-spread): Spreading to modify array elements in `map` calls is inefficient
+    ,-[src/pages/ResearchData.jsx:67:12]
+ 66 |           .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt))
+ 67 |           .map((s) => {
+    :            ^|^
+    :             `-- This map call spreads an array
+ 68 |             const values = RUBRIC_CRITERIA.map((c) => s.rubricScores?.[c.id]).filter((v) => typeof v === 'number')
+ 69 |             const weighted = RUBRIC_CRITERIA.reduce(
+ 70 |               (sum, c) => sum + ((s.rubricScores?.[c.id] ?? 0) * c.weight) / 100,
+ 71 |               0,
+ 72 |             )
+ 73 |             return [
+ 74 |               students.find((st) => st.id === s.studentId)?.name ?? s.studentId,
+ 75 |               s.section,
+ 76 |               s.item?.title ?? s.refId,
+ 77 |               s.kind,
+ 78 |               s.submittedAt.slice(0, 10),
+ 79 |               values.length ? mean(values).toFixed(2) : '',
+ 80 |               weighted.toFixed(2),
+ 81 |               ...RUBRIC_CRITERIA.map((c) => s.rubricScores?.[c.id] ?? ''),
+    :               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    :                                            `-- This spread allocates a new value on each iteration
+ 82 |               s.feedback ?? '',
+    `----
+  help: If in-place mutation is acceptable, use `push` (or `concat` when semantics match) instead of spreading
+  note: `push` mutates the array. `concat` returns a new array and is not equivalent for every iterable.
+
+  ! oxc(no-map-spread): Spreading to modify object properties in `map` calls is inefficient
+    ,-[src/pages/Analytics.jsx:93:9]
+ 92 |         [1, 2, 3, 4, 5],
+ 93 |       ).map((row) => ({ ...row, label: LIKERT_LABELS.find((l) => l.value === row.category)?.label ?? row.category })),
+    :         ^|^             ^^^|^^
+    :          |                 `-- This spread allocates a new value on each iteration
+    :          `-- This map call spreads an object
+ 94 |     [filteredSurveys],
+    `----
+  help: If in-place mutation is acceptable, use `Object.assign` or direct property assignment instead of spreading
+  note: `Object.assign` mutates the first argument. Disable this rule if copy-on-write behavior is required.
+
+Found 10 warnings and 0 errors.
+Finished in 18ms on 48 files with 129 rules using 12 threads.

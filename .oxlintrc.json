@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "settings": {
+    "jsx": {
+      "runtime": "automatic"
+    },
+    "react": {
+      "version": "19"
+    }
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "react/only-export-components": "off",
+    "react/no-unescaped-entities": "off",
+    "unicorn/no-array-sort": "off",
+    "unicorn/no-array-reverse": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "oxc/no-map-spread": "off",
+    "no-loss-of-precision": "off",
+    "no-empty": "off"
+  },
+  "ignorePatterns": ["dist", "node_modules"]
+}
