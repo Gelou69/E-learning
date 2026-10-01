@@ -2,30 +2,8 @@ import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { GraduationCap, Ruler, ShieldCheck, Sparkles } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { DEMO_ACCOUNTS } from '../lib/localStore'
 import { signUpWithPassword, usingSupabase } from '../lib/api'
 import { SDGS, SUBJECT } from '../data/constants'
-
-const ROLE_CARDS = [
-  {
-    role: 'student',
-    icon: GraduationCap,
-    title: 'Student',
-    blurb: 'Study plates, read lessons, submit work and complete the survey.',
-  },
-  {
-    role: 'teacher',
-    icon: Ruler,
-    title: 'Teacher',
-    blurb: 'Publish materials, grade submissions and monitor class performance.',
-  },
-  {
-    role: 'admin',
-    icon: ShieldCheck,
-    title: 'Admin',
-    blurb: 'Run the analytics, export research data and manage users.',
-  },
-]
 
 const SECTIONS = ['VGD 11 - Section A', 'VGD 11 - Section B', 'VGD 11 - Section C']
 
@@ -35,8 +13,8 @@ export default function Login() {
   const location = useLocation()
   const [mode, setMode] = useState('signin')
   const [role, setRole] = useState('student')
-  const [email, setEmail] = useState(DEMO_ACCOUNTS.student.email)
-  const [password, setPassword] = useState(DEMO_ACCOUNTS.student.password)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
   const [section, setSection] = useState(SECTIONS[0])
   const [studentNo, setStudentNo] = useState('')
@@ -91,24 +69,12 @@ export default function Login() {
     }
   }
 
-  const fillDemo = (selectedRole) => {
-    setEmail(DEMO_ACCOUNTS[selectedRole].email)
-    setPassword(DEMO_ACCOUNTS[selectedRole].password)
-    setError('')
-    setNotice('')
-  }
-
   const changeMode = (nextMode) => {
     setMode(nextMode)
     setError('')
     setNotice('')
-    if (nextMode === 'signup') {
-      setEmail('')
-      setPassword('')
-    } else {
-      setEmail(DEMO_ACCOUNTS.student.email)
-      setPassword(DEMO_ACCOUNTS.student.password)
-    }
+    setEmail('')
+    setPassword('')
   }
 
   return (
@@ -168,25 +134,8 @@ export default function Login() {
 
           <h2 className="text-xl font-semibold text-slate-900">{mode === 'signup' ? 'Create an account' : 'Sign in'}</h2>
           <p className="mt-1 text-sm text-slate-500">
-            {mode === 'signup' ? 'Register as a student or teacher.' : 'Use your school account, or pick a demo role below.'}
+            {mode === 'signup' ? 'Register as a student or teacher.' : 'Use your school account to sign in.'}
           </p>
-
-          {mode === 'signin' && (
-            <div className="mt-5 grid grid-cols-3 gap-2">
-              {ROLE_CARDS.map((card) => (
-                <button
-                  key={card.role}
-                  type="button"
-                  onClick={() => fillDemo(card.role)}
-                  className="rounded-lg border border-slate-200 bg-white p-2.5 text-left transition hover:border-teal-500 hover:shadow-sm"
-                >
-                  <card.icon size={16} className="text-teal-700" />
-                  <p className="mt-1.5 text-xs font-semibold text-slate-800">{card.title}</p>
-                  <p className="mt-0.5 hidden text-[10px] leading-snug text-slate-500 sm:block">{card.blurb}</p>
-                </button>
-              ))}
-            </div>
-          )}
 
           <form onSubmit={submit} className="card mt-4 space-y-4 p-5">
             {mode === 'signup' && (
@@ -252,7 +201,8 @@ export default function Login() {
               <input
                 id="email"
                 type="email"
-                autoComplete={mode === 'signup' ? 'email' : 'username'}
+                name="email"
+                autoComplete="off"
                 required
                 className="input"
                 value={email}
@@ -266,18 +216,14 @@ export default function Login() {
               <input
                 id="password"
                 type="password"
-                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                name="password"
+                autoComplete="off"
                 minLength={mode === 'signup' ? 8 : undefined}
                 required
                 className="input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              {mode === 'signin' && <p className="mt-1.5 text-[11px] text-slate-500">
-                Demo passwords: <code className="rounded bg-slate-100 px-1 py-0.5">student123</code>,{' '}
-                <code className="rounded bg-slate-100 px-1 py-0.5">teacher123</code>,{' '}
-                <code className="rounded bg-slate-100 px-1 py-0.5">admin123</code>
-              </p>}
             </div>
 
             {mode === 'signup' && role === 'teacher' && (
